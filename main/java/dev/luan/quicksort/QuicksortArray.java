@@ -1,50 +1,48 @@
 package dev.luan.quicksort;
 
-public class QuicksortArray {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-    private int[] aInternalIntegerArray;
+public class QuicksortArray<T extends Comparable<T>> {
+    private List<T> list;
+    private Comparator<T> comparator;
 
-    public int[] quickSort(int[] pIntergerArray) {
-        this.aInternalIntegerArray = pIntergerArray;
-        return this.internalQuickSort(0, pIntergerArray.length - 1);
+    public QuicksortArray() {
+        this.comparator = Comparator.naturalOrder();
     }
 
-    private int[] internalQuickSort(int pBeginIndex, int pEndIndex) {
-        int lPivot;
+    public QuicksortArray(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
+
+    public List<T> quickSort(List<T> inputList) {
+        this.list = new ArrayList<>(inputList);
+        internalQuickSort(0, inputList.size() - 1);
+        return list;
+    }
+
+    private void internalQuickSort(int pBeginIndex, int pEndIndex) {
         if (pBeginIndex < pEndIndex) {
-            lPivot = this.partition(pBeginIndex, pEndIndex);
-            this.internalQuickSort(pBeginIndex, lPivot);
-            this.internalQuickSort(lPivot + 1, pEndIndex);
+            int pivot = partition(pBeginIndex, pEndIndex);
+            internalQuickSort(pBeginIndex, pivot-1);
+            internalQuickSort(pivot+1, pEndIndex);
         }
-        return aInternalIntegerArray;
     }
-
 
     int partition(int pBeginIndex, int pEndIndex) {
-        int i;
-        int j;
-        int x = aInternalIntegerArray[(pBeginIndex + pEndIndex) / 2];
-        i = pBeginIndex - 1;
-        j = pEndIndex + 1;
+        T x = list.get(pEndIndex);
+        int i = pBeginIndex - 1;
 
-        boolean returned = false;
-
-        while (true) {
-            do {
+        for(int j = pBeginIndex; j < pEndIndex; j++){
+            if(comparator.compare(list.get(j), x) <= 0){
                 i++;
-            } while (aInternalIntegerArray[i] < x);
-
-            do {
-                j--;
-            } while (aInternalIntegerArray[j] > x);
-
-            if (i < j) {
-                int k = aInternalIntegerArray[i];
-                aInternalIntegerArray[i] = aInternalIntegerArray[j];
-                aInternalIntegerArray[j] = k;
-            } else {
-                return j;
+                Collections.swap(list, i, j);
             }
         }
+
+        Collections.swap(list, i+1, pEndIndex);
+        return i+1;
     }
 }
